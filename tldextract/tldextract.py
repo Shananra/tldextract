@@ -19,10 +19,10 @@ top-level domain) from the registered domain and subdomains of a URL.
     'forums.bbc'
 """
 
-from __future__ import with_statement
+
 
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except ImportError:
     import pickle
 import codecs
@@ -52,19 +52,19 @@ import re
 import socket
 
 try:
-    string_types = basestring
+    string_types = str
 except NameError:
     string_types = str
 
 try: # pragma: no cover
     # Python 2
-    from urllib2 import urlopen
-    from urlparse import scheme_chars
+    from urllib.request import urlopen
+    from urllib.parse import scheme_chars
 except ImportError: # pragma: no cover
     # Python 3
     from urllib.request import urlopen
     from urllib.parse import scheme_chars
-    unicode = str
+    str = str
 
 LOG = logging.getLogger("tldextract")
 
@@ -102,15 +102,15 @@ class ExtractResult(tuple):
 
     def _asdict(self):
         'Return a new dict which maps field names to their values'
-        base_zip = zip(self._fields, self)
+        base_zip = list(zip(self._fields, self))
         zipped = base_zip + [('tld', self.tld)]
         return dict(zipped)
 
     def _replace(_self, **kwds):
         'Return a new ExtractResult object replacing specified fields with new values'
-        result = _self._make(map(kwds.pop, ('subdomain', 'domain', 'suffix'), _self))
+        result = _self._make(list(map(kwds.pop, ('subdomain', 'domain', 'suffix'), _self)))
         if kwds:
-            raise ValueError('Got unexpected field names: %r' % kwds.keys())
+            raise ValueError('Got unexpected field names: %r' % list(kwds.keys()))
         return result
 
     def __getnewargs__(self):
@@ -317,14 +317,14 @@ def fetch_file(urls):
             return _decode_utf8(s)
 
     LOG.error('No Public Suffix List found. Consider using a mirror or constructing your TLDExtract with `fetch=False`.')
-    return u''
+    return ''
 
 def _decode_utf8(s):
     """ Decode from utf8 to Python unicode string.
 
     The suffix list, wherever its origin, should be UTF-8 encoded.
     """
-    return unicode(s, 'utf-8')
+    return str(s, 'utf-8')
 
 class _PublicSuffixListTLDExtractor(object):
     def __init__(self, tlds):
@@ -361,7 +361,7 @@ def main():
 
     parser.add_argument('--version', action='version', version='%(prog)s ' + distribution.version)
     parser.add_argument('input', metavar='fqdn|url',
-                        type=unicode, nargs='*', help='fqdn or url')
+                        type=str, nargs='*', help='fqdn or url')
 
     parser.add_argument('-u', '--update', default=False, action='store_true', help='force fetch the latest TLD definitions')
     parser.add_argument('-c', '--cache_file', help='use an alternate TLD definition file')
@@ -378,7 +378,7 @@ def main():
         exit(1)
 
     for i in args.input:
-        print(' '.join(extract(i)))
+        print((' '.join(extract(i))))
 
 if __name__ == "__main__":
     main()

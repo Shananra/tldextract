@@ -113,7 +113,7 @@ class ExtractTest(unittest.TestCase):
         self.assertExtract('216.22', 'project', 'coop', 'http://216.22.project.coop/')
 
     def test_punycode(self):
-        self.assertExtract('', u'россия', u'рф', 'http://xn--h1alffa9f.xn--p1ai')
+        self.assertExtract('', 'россия', 'рф', 'http://xn--h1alffa9f.xn--p1ai')
 
     def test_empty(self):
         self.assertExtract('', '', '', 'http://')
